@@ -1,0 +1,5 @@
+.env
+__pycache__/
+*.pyc
+VIRAL_STRATEGY.md
+Idea5_Structured_Extractor/*.json

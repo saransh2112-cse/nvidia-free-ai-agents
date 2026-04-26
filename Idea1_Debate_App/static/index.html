@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Debate Arena | Llama vs Mixtral</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="background-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+    
+    <main class="container">
+        <header>
+            <h1>AI Debate Arena</h1>
+            <p class="subtitle">Llama 3.1 <span>vs</span> Mixtral 8x22B</p>
+        </header>
+
+        <div class="controls glass-panel">
+            <textarea id="topic-input" placeholder="Enter a debate topic..." rows="3">What is the most important skill for a software engineer in the age of AI?</textarea>
+            <div class="turns-control">
+                <label for="turns-input">Turns:</label>
+                <input type="number" id="turns-input" value="2" min="1" max="5">
+            </div>
+            <button id="start-btn">Start Debate</button>
+        </div>
+
+        <div id="debate-stage" class="glass-panel">
+            <div id="messages-container">
+                <div class="system-message placeholder">
+                    Enter a topic and start the debate.
+                </div>
+            </div>
+            <div id="typing-indicator" class="hidden">
+                <span id="current-debater">Llama 3.1</span> is thinking<span class="dots">...</span>
+            </div>
+        </div>
+    </main>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
