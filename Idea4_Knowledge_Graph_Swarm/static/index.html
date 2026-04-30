@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate 3D Knowledge Swarm | NVIDIA NIM</title>
+    
+    <!-- Cache-Busting Library Injection -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js?v=101"></script>
+    <script src="https://cdn.jsdelivr.net/npm/3d-force-graph@1.73.2/dist/3d-force-graph.min.js?v=101"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; background-color: #020617; font-family: 'Outfit', sans-serif; overflow: hidden; color: white; }
+        #sidebar {
+            position: absolute; top: 0; left: 0; width: 420px; height: 100vh;
+            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1); z-index: 100; padding: 40px 30px;
+            box-sizing: border-box; display: flex; flex-direction: column;
+            box-shadow: 20px 0 60px rgba(0,0,0,0.8);
+        }
+        .logo { display: flex; align-items: center; gap: 12px; margin-bottom: 30px; }
+        .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #10b981, #3b82f6); border-radius: 8px; rotate: 45deg; }
+        h1 { margin: 0; font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; }
+        .input-group { margin-bottom: 25px; }
+        label { display: block; font-size: 0.75rem; font-weight: 600; color: #64748b; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; }
+        input {
+            width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.5); color: white; font-family: inherit; font-size: 1rem; outline: none; box-sizing: border-box;
+        }
+        input:focus { border-color: #10b981; }
+        button {
+            width: 100%; padding: 14px; border-radius: 12px; border: none;
+            background: linear-gradient(135deg, #10b981, #3b82f6); color: white; font-weight: 700; cursor: pointer; transition: transform 0.2s;
+        }
+        button:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        #details-panel {
+            margin-top: 30px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.1);
+            display: none; animation: fadeIn 0.5s forwards;
+        }
+        #details-panel h2 { font-size: 1.4rem; margin: 0 0 15px 0; color: #10b981; }
+        #details-panel p { color: #cbd5e1; line-height: 1.6; font-size: 0.95rem; }
+        .activity-feed {
+            margin-top: auto; background: rgba(0,0,0,0.4); border-radius: 12px; padding: 15px;
+            font-family: 'Courier New', Courier, monospace; font-size: 0.75rem; max-height: 150px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.05);
+        }
+        .feed-item { margin-bottom: 6px; color: #10b981; }
+        .feed-item span { color: #475569; }
+        .feed-item.error { color: #f43f5e; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        #3d-graph { width: 100vw; height: 100vh; }
+        .instruction { position: absolute; bottom: 20px; right: 20px; font-size: 0.8rem; color: #64748b; background: rgba(0,0,0,0.6); padding: 8px 15px; border-radius: 20px; }
+    </style>
+</head>
+<body>
+    <div id="sidebar">
+        <div class="logo">
+            <div class="logo-icon"></div>
+            <h1>Knowledge Canvas</h1>
+        </div>
+        <div class="input-group">
+            <label>Topic to Map</label>
+            <input type="text" id="topic-input" placeholder="e.g. Quantum Supremacy">
+            <button id="launch-btn" style="margin-top: 10px;">Deploy Swarm</button>
+        </div>
+        <div id="details-panel">
+            <label>Concept Insight</label>
+            <h2 id="detail-title">Concept Name</h2>
+            <p id="detail-desc">Click a node to reveal agent research.</p>
+        </div>
+        <div class="activity-feed" id="activity-feed">
+            <div class="feed-item"><span>[SYSTEM]</span> Waiting for payload...</div>
+        </div>
+    </div>
+    <div id="3d-graph"></div>
+    <div class="instruction">Click nodes to focus • Right-click to pan • Scroll to zoom</div>
+    <!-- Load app.js with cache-busting -->
+    <script src="/static/app.js?v=101"></script>
+</body>
+</html>

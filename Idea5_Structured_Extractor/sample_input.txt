@@ -1,0 +1,27 @@
+INVOICE
+
+From:
+TechFlow Solutions Inc.
+123 Innovation Drive
+Silicon Valley, CA 94025
+
+To:
+Acme Corp
+456 Business Road
+New York, NY 10001
+
+Invoice #: TF-2023-9941
+Date: October 24, 2023
+Due Date: November 24, 2023
+
+Description of Services:
+1. Cloud Infrastructure Setup & Migration (Q3) - $4,500.00
+2. Monthly Managed IT Support (October) - $1,200.00
+3. Custom API Development for CRM Integration - $3,800.00
+
+Subtotal: $9,500.00
+Tax (8.5%): $807.50
+Total Amount Due: $10,307.50 USD
+
+Please make checks payable to TechFlow Solutions Inc.
+Thank you for your business!
