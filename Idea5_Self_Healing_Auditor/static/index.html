@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHCA | Self-Healing Code Auditor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Outfit:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #050505; --accent: #00ff41; --danger: #ff003c; --warning: #ffcc00; --panel: rgba(20, 20, 25, 0.8); }
+        body { margin: 0; background-color: var(--bg); font-family: 'Outfit', sans-serif; color: white; overflow-x: hidden; }
+        
+        .matrix-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; opacity: 0.05; pointer-events: none; z-index: -1; }
+        
+        #app-container { display: flex; flex-direction: column; height: 100vh; padding: 30px; box-sizing: border-box; gap: 25px; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0, 255, 65, 0.2); padding-bottom: 20px; }
+        .logo { display: flex; align-items: center; gap: 15px; }
+        .logo-box { width: 40px; height: 40px; border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 900; color: var(--accent); box-shadow: 0 0 15px var(--accent); }
+        h1 { margin: 0; font-size: 1.8rem; letter-spacing: 2px; text-transform: uppercase; }
+        .status { font-family: 'Fira Code', monospace; font-size: 0.9rem; color: var(--accent); text-shadow: 0 0 5px var(--accent); }
+
+        .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; flex-grow: 1; min-height: 0; }
+        
+        .panel { 
+            background: var(--panel); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; 
+            display: flex; flex-direction: column; overflow: hidden; backdrop-filter: blur(20px);
+        }
+        .panel-header { padding: 12px 20px; background: rgba(255, 255, 255, 0.05); display: flex; justify-content: space-between; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: #888; }
+        
+        textarea, .code-viewer { 
+            flex-grow: 1; background: transparent; border: none; color: #ddd; 
+            font-family: 'Fira Code', monospace; font-size: 14px; padding: 20px; outline: none; resize: none; overflow-y: auto; line-height: 1.6;
+        }
+        
+        .controls { display: flex; gap: 15px; margin-top: 20px; }
+        button { 
+            padding: 15px 35px; border-radius: 8px; border: none; cursor: pointer; font-family: 'Outfit'; font-weight: 700; 
+            text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s;
+        }
+        .btn-scan { background: var(--accent); color: #000; box-shadow: 0 0 20px rgba(0, 255, 65, 0.4); }
+        .btn-scan:hover { transform: translateY(-2px); box-shadow: 0 0 35px rgba(0, 255, 65, 0.6); }
+        .btn-scan:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        #terminal { 
+            height: 180px; background: #000; border: 1px solid rgba(0, 255, 65, 0.3); border-radius: 12px; 
+            padding: 15px; font-family: 'Fira Code', monospace; font-size: 0.85rem; overflow-y: auto; color: var(--accent);
+        }
+        .term-line span { color: #555; margin-right: 10px; }
+        
+        .issue-card { 
+            margin: 15px; padding: 15px; border-radius: 8px; background: rgba(255, 255, 255, 0.03); 
+            border-left: 4px solid var(--warning); animation: slideIn 0.4s forwards;
+        }
+        .issue-card.Critical { border-left-color: var(--danger); }
+        .issue-type { font-size: 0.7rem; font-weight: 800; color: var(--warning); margin-bottom: 5px; }
+        .issue-card.Critical .issue-type { color: var(--danger); }
+        .issue-desc { font-size: 0.9rem; color: #ccc; margin-bottom: 10px; }
+        .diff-link { font-size: 0.75rem; color: var(--accent); text-decoration: underline; cursor: pointer; }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+    </style>
+</head>
+<body>
+    <div class="matrix-bg" id="matrix"></div>
+    <div id="app-container">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-box">SH</div>
+                <h1>Self-Healing Code Auditor</h1>
+            </div>
+            <div class="status" id="agent-status">AGENT STATUS: STANDBY</div>
+        </div>
+
+        <div class="main-grid">
+            <!-- INPUT PANEL -->
+            <div class="panel">
+                <div class="panel-header"><span>Source Code Input</span><span>Python</span></div>
+                <textarea id="code-input" placeholder="Paste your Python code here to initiate deep intelligence scan..."></textarea>
+            </div>
+
+            <!-- AUDIT & RESULTS PANEL -->
+            <div class="panel" id="results-panel">
+                <div class="panel-header"><span>Audit Diagnostics & Healed Output</span><span id="issue-count">0 Issues</span></div>
+                <div id="diagnostics" class="code-viewer">
+                    <div style="text-align: center; color: #555; margin-top: 100px;">
+                        Waiting for code injection...
+                    </div>
+                </div>
+                <div id="healed-view" class="code-viewer" style="display: none; border-top: 1px solid rgba(255,255,255,0.1);">
+                    <pre id="healed-code"></pre>
+                </div>
+            </div>
+        </div>
+
+        <div id="terminal">
+            <div class="term-line"><span>[SYSTEM]</span> Initializing SHCA Neural Core...</div>
+            <div class="term-line"><span>[SYSTEM]</span> Waiting for payload...</div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-scan" id="scan-btn">Initiate Deep Scan</button>
+            <button style="background: rgba(255,255,255,0.1); color: white;" id="clear-btn">Clear Workspace</button>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
