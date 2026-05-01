@@ -1,6 +1,0 @@
-TARGET PROFILE: Umang Yadav
-Role: Senior Data Scientist @ HRS Group
-Interests: Building AI Copilots for Travel, Autonomous Agent Swarms, Open Source Contribution.
-Recent Activity: Just built a Self-Healing Code Auditor using NVIDIA NIM. Passionate about teaching btech students at Plaksha University about the Agentic Revolution.
-Company: HRS Group is a global leader in corporate travel technology, focusing on automated procurement and hotel negotiation.
-Pain Point: Wants to scale AI agent adoption within enterprise workflows but needs to ensure high performance and low latency.

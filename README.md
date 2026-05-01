@@ -1,12 +1,10 @@
-![NVIDIA AI Agent Blueprints](media/repo_banner.png)
+# 🕸️ NVIDIA AI Free Agent Blueprints (5 Days of Enterprise Excellence)
 
-# 🕸️ NVIDIA AI Free Agent Blueprints (10 Days of Enterprise Excellence)
-
-Welcome to the open-source repository for the **30-Day Enterprise Agent Challenge**. This repository contains 10 high-performance, business-grade agentic blueprints built using NVIDIA NIMs and Llama 3.1.
+Welcome to the open-source repository for the **30-Day Enterprise Agent Challenge**. This repository contains high-performance, business-grade agentic blueprints built using NVIDIA NIMs and Llama 3.1.
 
 ---
 
-## 🚀 The Blueprints (Phase 1: Days 1-5)
+## 🚀 The Blueprints
 
 ### Day 1: Multi-Agent Debate Arena ⚔️
 A multi-agent workflow where two LLMs debate a topic, moderated by a third agent. 
@@ -30,36 +28,11 @@ An autonomous security agent that scans Python code for vulnerabilities and auto
 
 ---
 
-## 🚀 The Blueprints (Phase 2: Days 6-10)
-
-### Day 6: Corporate Contract Negotiator ⚖️
-A dual-agent swarm for real-time legal risk auditing and strategic counter-offer generation.
-> 📺 **[Watch the Demo Video](media/day6_demo.mp4)**
-
-### Day 7: Nexus Sales Swarm 🎯
-Hyper-personalized B2B prospecting using a "Target Acquisition" radar and personality DNA mapping.
-> 📺 **[Watch the Demo Video](media/day7_demo.mp4)**
-
-### Day 8: Vanguard M&A Intelligence Hub 📊
-High-fidelity due diligence swarm that audits financials, legal filings, and cultural health for acquisitions.
-> 📺 **[Watch the Demo Video](media/day8_demo.mp4)**
-
-### Day 9: Sentinel PR Crisis Swarm 🛡️
-Emergency command center for reputation management, featuring side-by-side narrative dueling.
-> 📺 **[Watch the Demo Video](media/day9_demo.mp4)**
-
-### Day 10: Midas Revenue Swarm 💰 (SERIES FINALE)
-Billionaire-grade revenue operations dashboard that finds pricing arbitrage and generates automated flash offers.
-> 📺 **[Watch the Demo Video](media/day10_demo.mp4)**
-
----
-
 ## 🛠️ Getting Started
 1. Clone the repo: `git clone https://github.com/umang-algo/nvidia-free-ai-agents.git`
 2. Get your free NVIDIA API Key at [NVIDIA NIM](https://build.nvidia.com/).
 3. Add your key to a `.env` file: `NVIDIA_API_KEY=your_key_here`
-4. Place your demo videos in the `media/` folder and name them `dayX_demo.mp4`.
-5. Run any blueprint: `cd IdeaX && python -m uvicorn app:app --port 800X --reload`
+4. Run any blueprint: `cd IdeaX && python -m uvicorn app:app --port 800X --reload`
 
 ---
 

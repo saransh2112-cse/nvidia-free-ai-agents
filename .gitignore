@@ -1,5 +1,11 @@
 .env
 __pycache__/
 *.pyc
-VIRAL_STRATEGY.md
-Idea5_Structured_Extractor/*.json
+.DS_Store
+
+# Enterprise Challenge - Future Releases
+Idea6_Contract_Negotiator/
+Idea7_Sales_Nexus/
+Idea8_MA_Intelligence/
+Idea9_PR_Crisis_Sentinel/
+Idea10_Revenue_Midas/
