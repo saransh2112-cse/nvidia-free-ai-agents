@@ -1,0 +1,3 @@
+Company: Apple Inc.
+Ticker: AAPL
+Decision: Acquire OpenAI for $100B to dominate the enterprise AI software market and integrate GPT-5 into all Apple devices and services.

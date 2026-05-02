@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ORACLE | C-Suite Digital Twin Boardroom</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Playfair+Display:wght@700;900&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #04060f;
+            --navy: #0a0e1f;
+            --panel: rgba(10, 14, 31, 0.9);
+            --border: rgba(255,255,255,0.06);
+            --gold: #c9a84c;
+            --platinum: #e2e8f0;
+            --muted: #475569;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: var(--bg);
+            font-family: 'Outfit', sans-serif;
+            color: var(--platinum);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ── Background grid ── */
+        body::before {
+            content: '';
+            position: fixed; inset: 0; z-index: 0;
+            background-image:
+                linear-gradient(rgba(201,168,76,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(201,168,76,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+        }
+
+        .wrapper { position: relative; z-index: 1; max-width: 1600px; margin: 0 auto; padding: 30px; }
+
+        /* ── Header ── */
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid rgba(201,168,76,0.2);
+            padding-bottom: 20px; margin-bottom: 30px;
+        }
+        .brand { display: flex; align-items: center; gap: 16px; }
+        .brand-badge {
+            width: 48px; height: 48px;
+            background: linear-gradient(135deg, var(--gold), #8b6914);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem;
+            box-shadow: 0 0 30px rgba(201,168,76,0.3);
+        }
+        .brand-text h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem; color: var(--gold);
+        }
+        .brand-text p { font-size: 0.7rem; color: var(--muted); letter-spacing: 3px; text-transform: uppercase; }
+        .live-badge {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 0.7rem; color: #22c55e; letter-spacing: 2px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .live-dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; animation: pulse 1s infinite; }
+
+        /* ── Input Section ── */
+        .input-panel {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(20px);
+        }
+        .input-grid { display: grid; grid-template-columns: 1fr 180px 1fr auto; gap: 16px; align-items: end; }
+        .field label { display: block; font-size: 0.65rem; letter-spacing: 3px; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; }
+        .field input, .field textarea {
+            width: 100%; background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border); border-radius: 10px;
+            color: var(--platinum); font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem; padding: 14px 16px; outline: none;
+            transition: border-color 0.3s;
+        }
+        .field input:focus, .field textarea:focus { border-color: var(--gold); }
+        .field textarea { resize: none; height: 52px; }
+        .btn-convene {
+            padding: 16px 32px; border: none; border-radius: 12px;
+            background: linear-gradient(135deg, var(--gold), #8b6914);
+            color: #000; font-weight: 900; font-size: 0.9rem;
+            letter-spacing: 2px; text-transform: uppercase;
+            cursor: pointer; transition: 0.3s; white-space: nowrap;
+            box-shadow: 0 0 30px rgba(201,168,76,0.2);
+        }
+        .btn-convene:hover { transform: translateY(-2px); box-shadow: 0 0 50px rgba(201,168,76,0.4); }
+        .btn-convene:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        /* ── Live Intel Strip ── */
+        .intel-strip {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+            margin-bottom: 30px;
+        }
+        .intel-card {
+            background: var(--panel); border: 1px solid var(--border);
+            border-radius: 12px; padding: 16px 20px;
+        }
+        .intel-label { font-size: 0.6rem; color: var(--muted); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 6px; }
+        .intel-val { font-size: 1.4rem; font-weight: 900; color: var(--platinum); font-family: 'JetBrains Mono', monospace; }
+        .intel-sub { font-size: 0.7rem; color: var(--muted); margin-top: 4px; }
+        .positive { color: #22c55e !important; }
+        .negative { color: #ef4444 !important; }
+
+        /* ── Boardroom Grid ── */
+        .boardroom { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 30px; }
+
+        .exec-card {
+            background: var(--panel); border: 1px solid var(--border);
+            border-radius: 20px; padding: 24px;
+            position: relative; overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            opacity: 0; transform: translateY(20px);
+        }
+        .exec-card.active { opacity: 1; transform: translateY(0); transition: opacity 0.5s, transform 0.5s; }
+        .exec-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: var(--exec-color);
+            box-shadow: 0 0 20px var(--exec-color);
+        }
+        .exec-icon { font-size: 2rem; margin-bottom: 12px; }
+        .exec-role {
+            font-size: 0.6rem; letter-spacing: 3px; text-transform: uppercase;
+            color: var(--exec-color); font-weight: 900; margin-bottom: 4px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .exec-title { font-size: 0.8rem; color: var(--muted); margin-bottom: 16px; }
+        .exec-analysis {
+            font-size: 0.82rem; color: #94a3b8; line-height: 1.6;
+            min-height: 120px; white-space: pre-line;
+        }
+        .exec-verdict {
+            margin-top: 16px; padding: 8px 14px; border-radius: 8px;
+            font-size: 0.7rem; font-weight: 900; letter-spacing: 2px;
+            text-align: center; text-transform: uppercase;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .verdict-APPROVE { background: rgba(34,197,94,0.1); color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+        .verdict-REJECT { background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+        .verdict-CONDITIONAL { background: rgba(249,115,22,0.1); color: #f97316; border: 1px solid rgba(249,115,22,0.3); }
+
+        /* ── Board Decision ── */
+        .board-decision {
+            background: var(--panel); border: 1px solid var(--border);
+            border-radius: 24px; padding: 40px;
+            text-align: center; position: relative; overflow: hidden;
+        }
+        .board-decision::before {
+            content: ''; position: absolute; inset: 0;
+            background: radial-gradient(circle at 50% 0%, var(--decision-color-transparent), transparent 70%);
+        }
+        .decision-label { font-size: 0.7rem; letter-spacing: 4px; color: var(--muted); text-transform: uppercase; margin-bottom: 16px; }
+        .decision-result {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem; font-weight: 900;
+            color: var(--decision-color);
+            text-shadow: 0 0 40px var(--decision-color);
+            margin-bottom: 24px;
+        }
+        .tally { display: flex; justify-content: center; gap: 40px; }
+        .tally-item { text-align: center; }
+        .tally-num { font-size: 2.5rem; font-weight: 900; font-family: 'JetBrains Mono', monospace; }
+        .tally-lab { font-size: 0.65rem; color: var(--muted); letter-spacing: 3px; text-transform: uppercase; margin-top: 4px; }
+
+        /* ── News Feed ── */
+        .news-strip {
+            background: var(--panel); border: 1px solid var(--border);
+            border-radius: 12px; padding: 16px 24px;
+            display: flex; align-items: center; gap: 16px;
+            margin-bottom: 20px; overflow: hidden;
+        }
+        .news-tag { font-size: 0.6rem; color: var(--gold); letter-spacing: 2px; white-space: nowrap; font-weight: 900; }
+        .news-items { display: flex; gap: 24px; font-size: 0.78rem; color: var(--muted); overflow: hidden; }
+        .news-item::before { content: '▸ '; color: var(--gold); }
+
+        /* ── States ── */
+        .thinking { display: flex; align-items: center; gap: 8px; color: var(--gold); font-size: 0.8rem; }
+        .thinking-dot { width: 6px; height: 6px; background: var(--gold); border-radius: 50%; animation: bounce 0.6s infinite; }
+        .thinking-dot:nth-child(2) { animation-delay: 0.15s; }
+        .thinking-dot:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+        @keyframes bounce { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-6px); } }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+
+    <!-- Header -->
+    <div class="header">
+        <div class="brand">
+            <div class="brand-badge">🏛️</div>
+            <div class="brand-text">
+                <h1>Oracle Boardroom</h1>
+                <p>C-Suite Digital Twin · Live Intelligence · NVIDIA NIM</p>
+            </div>
+        </div>
+        <div class="live-badge">
+            <div class="live-dot"></div>
+            <span id="status-text">SATCOM LIVE — MARKET FEEDS ACTIVE</span>
+        </div>
+    </div>
+
+    <!-- Input -->
+    <div class="input-panel">
+        <div class="input-grid">
+            <div class="field">
+                <label>Company Name</label>
+                <input id="company-input" type="text" placeholder="e.g. Apple Inc.">
+            </div>
+            <div class="field">
+                <label>Stock Ticker</label>
+                <input id="ticker-input" type="text" placeholder="e.g. AAPL">
+            </div>
+            <div class="field">
+                <label>Strategic Decision</label>
+                <textarea id="decision-input" placeholder="e.g. Acquire OpenAI for $100B to dominate the enterprise AI market"></textarea>
+            </div>
+            <button class="btn-convene" id="convene-btn">Convene Board</button>
+        </div>
+    </div>
+
+    <!-- Live Intel Strip -->
+    <div class="intel-strip" id="intel-strip">
+        <div class="intel-card">
+            <div class="intel-label">Stock Price</div>
+            <div class="intel-val" id="intel-price">—</div>
+            <div class="intel-sub" id="intel-change">Awaiting signal...</div>
+        </div>
+        <div class="intel-card">
+            <div class="intel-label">Exchange</div>
+            <div class="intel-val" id="intel-exchange">—</div>
+            <div class="intel-sub">Live Market Feed</div>
+        </div>
+        <div class="intel-card">
+            <div class="intel-label">Board Verdict</div>
+            <div class="intel-val" id="intel-verdict">—</div>
+            <div class="intel-sub">5 C-Suite Agents</div>
+        </div>
+        <div class="intel-card">
+            <div class="intel-label">Consensus</div>
+            <div class="intel-val" id="intel-consensus">—</div>
+            <div class="intel-sub">Neural Tally</div>
+        </div>
+    </div>
+
+    <!-- News -->
+    <div class="news-strip" id="news-strip" style="display:none;">
+        <div class="news-tag">LIVE INTEL</div>
+        <div class="news-items" id="news-items"></div>
+    </div>
+
+    <!-- Boardroom -->
+    <div class="boardroom" id="boardroom">
+        <!-- Exec cards injected by JS -->
+    </div>
+
+    <!-- Board Decision -->
+    <div class="board-decision" id="board-decision" style="display:none;">
+        <div class="decision-label">Oracle Board Ruling</div>
+        <div class="decision-result" id="decision-result">—</div>
+        <div class="tally">
+            <div class="tally-item">
+                <div class="tally-num positive" id="tally-approve">0</div>
+                <div class="tally-lab">Approve</div>
+            </div>
+            <div class="tally-item">
+                <div class="tally-num" style="color:#f97316" id="tally-conditional">0</div>
+                <div class="tally-lab">Conditional</div>
+            </div>
+            <div class="tally-item">
+                <div class="tally-num negative" id="tally-reject">0</div>
+                <div class="tally-lab">Reject</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="/static/app.js"></script>
+</body>
+</html>
