@@ -3,9 +3,5 @@ __pycache__/
 *.pyc
 .DS_Store
 
-# Enterprise Challenge - Future Releases
-Idea6_Contract_Negotiator/
-Idea7_Sales_Nexus/
-Idea8_MA_Intelligence/
-Idea9_PR_Crisis_Sentinel/
-Idea10_Revenue_Midas/
+# Enterprise Challenge - Live Release
+# Idea6-10 are now public
