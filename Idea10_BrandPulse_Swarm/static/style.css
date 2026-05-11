@@ -1,0 +1,166 @@
+:root {
+    --bg-dark: #050608;
+    --glass: rgba(20, 22, 30, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --primary: #bc13fe;
+    --secondary: #00f2ff;
+    --danger: #ff0055;
+    --text: #f0f0f0;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+body {
+    background: var(--bg-dark);
+    color: var(--text);
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+}
+
+.dashboard {
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    background: radial-gradient(circle at top right, rgba(188, 19, 254, 0.05), transparent);
+}
+
+.sidebar {
+    background: rgba(0, 0, 0, 0.4);
+    border-right: 1px solid var(--glass-border);
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    z-index: 10;
+}
+
+.main-content {
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow: hidden;
+}
+
+.stats-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.stat-card {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+}
+
+.stat-value { font-size: 2rem; font-weight: 800; color: var(--secondary); }
+.thought-label { color: var(--primary); font-size: 0.7rem; font-weight: 800; letter-spacing: 1px; margin-bottom: 5px; display: block; }
+.stat-label { font-size: 0.75rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+
+.swarm-feed {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Agent Report Styling */
+.agent-report {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 25px;
+    animation: slideUp 0.4s ease-out;
+}
+
+.agent-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.active-badge { background: rgba(0, 242, 255, 0.1); color: var(--secondary); padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; }
+.active-badge.thinking { background: rgba(188, 19, 254, 0.2); color: var(--primary); animation: glow-pulse 1s infinite alternate; }
+@keyframes glow-pulse { from { opacity: 0.5; box-shadow: 0 0 5px var(--primary); } to { opacity: 1; box-shadow: 0 0 15px var(--primary); } }
+.audit-badge { background: rgba(188, 19, 254, 0.2); color: var(--primary); padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; }
+
+.thought-process {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 15px;
+    border-radius: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    color: #999;
+    margin-bottom: 20px;
+    border-left: 4px solid var(--primary);
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+.data-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+.data-item {
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 15px;
+}
+
+.data-content { color: #ccc; line-height: 1.6; font-size: 0.95rem; }
+.data-content ul { padding-left: 20px; margin-top: 10px; }
+.data-content li { margin-bottom: 5px; }
+
+/* Status Pulse */
+.status-pulse-container {
+    background: rgba(188, 19, 254, 0.05);
+    border: 1px solid rgba(188, 19, 254, 0.1);
+    padding: 15px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.pulse-dot { width: 12px; height: 12px; background: var(--primary); border-radius: 50%; box-shadow: 0 0 10px var(--primary); animation: blink 1s infinite; }
+
+@keyframes blink { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
+
+/* Input Styling */
+textarea, input {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 15px;
+    color: white;
+    width: 100%;
+}
+
+button {
+    background: linear-gradient(135deg, var(--primary), #8a2be2);
+    color: white;
+    border: none;
+    padding: 18px;
+    border-radius: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+}
+button:hover { transform: scale(1.02); filter: brightness(1.2); }

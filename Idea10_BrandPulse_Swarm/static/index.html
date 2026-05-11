@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrandPulse Pro v2.5 | Enterprise Swarm</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="header">
+                <h1 style="font-size: 1.8rem; font-weight: 800; background: linear-gradient(to right, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">BrandPulse Pro</h1>
+                <p style="font-size: 0.75rem; color: #555; margin-top: 5px;">v2.5 • Enterprise Multi-Agent Intelligence</p>
+            </div>
+
+            <div id="statusPulse" class="status-pulse-container">
+                <div class="pulse-dot"></div>
+                <div id="statusPulseText" style="font-size: 0.8rem;">Awaiting Swarm Initialization...</div>
+            </div>
+
+            <div class="input-group" style="display: flex; flex-direction: column; gap: 10px;">
+                <label style="font-size: 0.7rem; text-transform: uppercase; color: #555;">Target Brand</label>
+                <input type="text" id="brandName" value="QuantumFlow">
+            </div>
+
+            <div class="input-group" style="display: flex; flex-direction: column; gap: 10px; flex: 1;">
+                <label style="font-size: 0.7rem; text-transform: uppercase; color: #555;">Live Feed Input</label>
+                <textarea id="mentions" style="height: 100%; min-height: 200px;"></textarea>
+            </div>
+
+            <button onclick="activateSwarm()">Initialize Swarm</button>
+        </aside>
+
+        <main class="main-content">
+            <div class="stats-bar" id="statsBar">
+                <div class="stat-card">
+                    <span class="stat-label">Sentiment Velocity</span>
+                    <div class="stat-value" id="scoreVal">--</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Crisis Level</span>
+                    <div class="stat-value" id="crisisVal" style="color: var(--danger);">--</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Audit Confidence</span>
+                    <div class="stat-value" id="auditVal" style="color: #00ff00; font-size: 1.2rem;">--</div>
+                </div>
+            </div>
+
+            <div class="swarm-feed" id="swarmFeed">
+                <!-- Advanced Agents will stream here -->
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
