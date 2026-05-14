@@ -7,6 +7,7 @@ from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from openai import AsyncOpenAI
+from dotenv import load_dotenv
 from pathlib import Path
 
 # Load .env from root directory
@@ -25,6 +26,7 @@ MODEL = "meta/llama-3.1-8b-instruct"
 
 class PulseRequest(BaseModel):
     brand_name: str
+    strategic_query: str = ""
     recent_mentions: str
 
 @app.get("/", response_class=HTMLResponse)
@@ -77,7 +79,8 @@ AGENTS = [
             "You are the Chief Orchestrator. Provide a final executive audit. "
             "After your analysis, output EXACTLY the following JSON and nothing else after it:\n"
             '{"verdict": "<10 words>", "summary": "<40 words, 2 sentences>", '
-            '"actions": ["<action1 max 8 words>", "<action2 max 8 words>", "<action3 max 8 words>"]}'
+            '"actions": ["<action1 max 8 words>", "<action2 max 8 words>", "<action3 max 8 words>"], '
+            '"refining_question": "<A follow-up question for the user to refine this analysis>"}'
         ),
     },
 ]
@@ -97,11 +100,14 @@ def extract_last_json(text: str) -> str:
                 return text[i:end + 1]
     return ""
 
-async def stream_agent(agent: dict, brand_name: str, mentions: str):
+async def stream_agent(agent: dict, brand_name: str, query: str, mentions: str):
     """Fetch full response, stream reasoning word-by-word, then emit final JSON."""
     import asyncio
+    
+    query_context = f"\n\nStrategic Goal/Question: {query}" if query else ""
+    
     user_msg = (
-        f"Brand: {brand_name}\n\n"
+        f"Brand: {brand_name}{query_context}\n\n"
         f"Live Feed:\n{mentions}\n\n"
         "Write a concise professional analysis (2-3 sentences). Then output the required JSON."
     )
@@ -156,10 +162,10 @@ async def stream_agent(agent: dict, brand_name: str, mentions: str):
         yield send({"agent": agent["key"], "error": "No data object returned."})
 
 
-async def swarm_generator(brand_name: str, mentions: str):
+async def swarm_generator(brand_name: str, query: str, mentions: str):
     for agent in AGENTS:
         yield send({"status": agent["status"]})
-        async for chunk in stream_agent(agent, brand_name, mentions):
+        async for chunk in stream_agent(agent, brand_name, query, mentions):
             yield chunk
 
     yield send({"status": "Mission Complete."})
@@ -168,6 +174,6 @@ async def swarm_generator(brand_name: str, mentions: str):
 @app.post("/analyze_stream")
 async def analyze_stream(req: PulseRequest):
     return StreamingResponse(
-        swarm_generator(req.brand_name, req.recent_mentions),
+        swarm_generator(req.brand_name, req.strategic_query, req.recent_mentions),
         media_type="text/event-stream",
     )

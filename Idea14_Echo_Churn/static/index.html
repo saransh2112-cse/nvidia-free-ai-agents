@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echo — AI Churn Prediction Engine</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        :root{--bg:#04070f;--surface:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);--text:#e2e8f0;--muted:#64748b;--red:#ef4444;--purple:#a855f7;--cyan:#06b6d4;--orange:#f97316}
+        html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden}
+        body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 50% at 15% 10%,rgba(239,68,68,0.07) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 85% 85%,rgba(168,85,247,0.06) 0%,transparent 60%);pointer-events:none;z-index:0}
+        .container{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:0 24px 60px}
+        header{padding:40px 0 32px;border-bottom:1px solid var(--border);margin-bottom:40px}
+        .header-inner{display:flex;align-items:center;gap:16px}
+        .logo{width:48px;height:48px;background:linear-gradient(135deg,#ef4444,#a855f7);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px}
+        .header-text h1{font-size:1.6rem;font-weight:800;background:linear-gradient(90deg,#ef4444,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .header-text p{font-size:0.85rem;color:var(--muted);margin-top:2px}
+        .status-pill{margin-left:auto;display:flex;align-items:center;gap:8px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:100px;padding:6px 14px;font-size:0.75rem;font-weight:600;color:var(--red)}
+        .pulse{width:7px;height:7px;border-radius:50%;background:var(--red);animation:pulse 2s infinite}
+        @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(1.4)}}
+        .input-panel{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:32px;margin-bottom:40px}
+        .input-panel h2{font-size:0.75rem;font-weight:600;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:20px}
+        .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+        @media(max-width:640px){.form-grid{grid-template-columns:1fr}}
+        .field label{display:block;font-size:0.7rem;font-weight:600;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:7px}
+        .field input{width:100%;padding:11px 14px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Inter',sans-serif;font-size:0.88rem;transition:border 0.2s}
+        .field input:focus{outline:none;border-color:rgba(239,68,68,0.5);box-shadow:0 0 0 3px rgba(239,68,68,0.1)}
+        .field input::placeholder{color:#374151}
+        #launch-btn{width:100%;padding:14px;background:linear-gradient(90deg,#ef4444,#a855f7);border:none;border-radius:12px;cursor:pointer;color:#fff;font-family:'Inter',sans-serif;font-size:0.95rem;font-weight:700;margin-top:6px;transition:opacity 0.2s}
+        #launch-btn:hover{opacity:0.9}
+        #loading{display:none;text-align:center;padding:60px 20px}
+        .heartbeat svg{width:80px;height:80px;margin:0 auto 24px;display:block;animation:hb 1.2s ease-in-out infinite}
+        @keyframes hb{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+        .loading-title{font-size:1.1rem;font-weight:600;color:var(--red);margin-bottom:8px}
+        #loading-msg{color:var(--muted);font-size:0.9rem}
+        #results{display:none}
+        .score-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px 32px;margin-bottom:24px;display:flex;align-items:center;gap:32px;flex-wrap:wrap}
+        .score-ring{position:relative;width:120px;height:120px;flex-shrink:0}
+        .score-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+        .score-ring circle{fill:none;stroke-width:8;stroke-linecap:round}
+        .score-ring .track{stroke:rgba(255,255,255,0.06)}
+        .score-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+        .score-number{font-size:1.8rem;font-weight:800;line-height:1}
+        .score-label{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px}
+        .score-meta h3{font-size:1.1rem;font-weight:700;margin-bottom:6px}
+        .score-meta p{font-size:0.85rem;color:var(--muted)}
+        .risk-badge-large{padding:10px 24px;border-radius:100px;font-size:0.9rem;font-weight:800;display:inline-block;margin-top:10px}
+        .agents-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+        @media(max-width:640px){.agents-grid{grid-template-columns:1fr}}
+        .agent-card{background:var(--surface);border-radius:16px;padding:22px;border:1px solid var(--border);transition:transform 0.2s;animation:fadeUp 0.4s ease both}
+        .agent-card:hover{transform:translateY(-2px)}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+        .agent-card:nth-child(1){animation-delay:0s}.agent-card:nth-child(2){animation-delay:0.1s}.agent-card:nth-child(3){animation-delay:0.2s}.agent-card:nth-child(4){animation-delay:0.3s}
+        .agent-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+        .agent-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+        .agent-meta .role{font-size:0.65rem;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+        .agent-meta .name{font-size:0.85rem;font-weight:600;color:var(--text)}
+        .agent-body{font-size:0.82rem;line-height:1.65;color:#94a3b8}
+        .agent-verdict{margin-top:14px;padding:6px 12px;border-radius:8px;font-size:0.72rem;font-weight:700;font-family:'JetBrains Mono',monospace;display:inline-block}
+        .reset-btn{display:block;margin:28px auto 0;padding:10px 28px;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--muted);font-family:'Inter',sans-serif;font-size:0.85rem;cursor:pointer;transition:border-color 0.2s,color 0.2s}
+        .reset-btn:hover{border-color:var(--red);color:var(--red)}
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <div class="header-inner">
+            <div class="logo">📉</div>
+            <div class="header-text">
+                <h1>Echo</h1>
+                <p>AI Customer Churn Prediction & Retention Engine · Powered by NVIDIA NIM</p>
+            </div>
+            <div class="status-pill"><div class="pulse"></div> CHURN RADAR</div>
+        </div>
+    </header>
+    <div class="input-panel" id="input-panel">
+        <h2>🎯 Customer Risk Profile</h2>
+        <div class="form-grid">
+            <div class="field"><label>Company / Customer Name</label><input id="company" value="Acme Corp" placeholder="Acme Corp"></div>
+            <div class="field"><label>Current Plan</label><input id="plan" value="Pro - $299/mo" placeholder="Pro - $299/mo"></div>
+            <div class="field"><label>Tenure (months)</label><input id="tenure" type="number" value="14"></div>
+            <div class="field"><label>Industry</label><input id="industry" value="E-commerce" placeholder="E-commerce"></div>
+            <div class="field"><label>Usage Trend</label><input id="usage" value="Dropped 60% in last 30 days"></div>
+            <div class="field"><label>Support Tickets</label><input id="support" value="3 unresolved tickets in 2 weeks"></div>
+        </div>
+        <div class="field" style="margin-bottom:16px"><label>Billing Signals</label><input id="billing" value="Downgrade request submitted 5 days ago"></div>
+        <button id="launch-btn" onclick="launchEcho()">📉 Run Churn Analysis Swarm</button>
+    </div>
+    <div id="loading">
+        <div class="heartbeat">
+            <svg viewBox="0 0 100 60"><path d="M5,30 L20,30 L30,5 L40,55 L50,20 L60,45 L70,30 L85,30 L95,30" fill="none" stroke="#ef4444" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="loading-title">Echo Swarm Active</div>
+        <p id="loading-msg">Scanning customer signals...</p>
+    </div>
+    <div id="results">
+        <div class="score-card">
+            <div class="score-ring">
+                <svg viewBox="0 0 100 100">
+                    <circle class="track" cx="50" cy="50" r="45"/>
+                    <circle class="fill" id="score-fill" cx="50" cy="50" r="45" stroke="#ef4444"/>
+                </svg>
+                <div class="score-center">
+                    <div class="score-number" id="score-number">—</div>
+                    <div class="score-label">Churn Risk</div>
+                </div>
+            </div>
+            <div class="score-meta">
+                <h3 id="score-company">—</h3>
+                <p id="score-plan">—</p>
+                <div class="risk-badge-large" id="risk-badge">—</div>
+            </div>
+        </div>
+        <div class="agents-grid" id="agents-grid"></div>
+        <button class="reset-btn" onclick="resetEcho()">← New Customer Analysis</button>
+    </div>
+</div>
+<script src="/static/app.js"></script>
+</body>
+</html>

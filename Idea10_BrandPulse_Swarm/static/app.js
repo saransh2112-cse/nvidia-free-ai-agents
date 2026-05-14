@@ -2,6 +2,7 @@ let activeAgentCard = null;
 
 async function activateSwarm() {
     const brandName = document.getElementById('brandName').value;
+    const strategicQuery = document.getElementById('strategicQuery').value;
     const mentions = document.getElementById('mentions').value;
     const feed = document.getElementById('swarmFeed');
 
@@ -17,7 +18,11 @@ async function activateSwarm() {
         const response = await fetch('/analyze_stream', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ brand_name: brandName, recent_mentions: mentions })
+            body: JSON.stringify({ 
+                brand_name: brandName, 
+                strategic_query: strategicQuery,
+                recent_mentions: mentions 
+            })
         });
 
         const reader = response.body.getReader();
@@ -143,12 +148,13 @@ function finalizeAgent(agentKey, data) {
         metrics = [
             { label: 'Final Verdict', value: data.verdict || data.final_verdict },
             { label: 'Executive Summary', value: data.summary || data.executive_summary },
-            { label: 'Critical Adjustments', value: data.actions || data.critical_adjustments }
+            { label: 'Critical Adjustments', value: data.actions || data.critical_adjustments },
+            { label: 'Swarm Needs to Know', value: data.refining_question, style: 'color: var(--secondary); font-weight: 600;' }
         ];
     }
 
     grid.innerHTML = metrics.map(m => `
-        <div class="data-item">
+        <div class="data-item" style="${m.style || ''}">
             <span class="data-label">${m.label}</span>
             <div class="data-content">${formatValue(m.value)}</div>
         </div>

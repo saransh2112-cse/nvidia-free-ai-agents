@@ -22,12 +22,17 @@
 
             <div class="input-group" style="display: flex; flex-direction: column; gap: 10px;">
                 <label style="font-size: 0.7rem; text-transform: uppercase; color: #555;">Target Brand</label>
-                <input type="text" id="brandName" value="QuantumFlow">
+                <input type="text" id="brandName" value="NVIDIA">
+            </div>
+
+            <div class="input-group" style="display: flex; flex-direction: column; gap: 10px;">
+                <label style="font-size: 0.7rem; text-transform: uppercase; color: #555;">Strategic Query (Question)</label>
+                <input type="text" id="strategicQuery" placeholder="e.g. Is the new logo well received?">
             </div>
 
             <div class="input-group" style="display: flex; flex-direction: column; gap: 10px; flex: 1;">
                 <label style="font-size: 0.7rem; text-transform: uppercase; color: #555;">Live Feed Input</label>
-                <textarea id="mentions" style="height: 100%; min-height: 200px;"></textarea>
+                <textarea id="mentions" style="height: 100%; min-height: 200px;" placeholder="Paste social mentions, news snippets, or customer feedback..."></textarea>
             </div>
 
             <button onclick="activateSwarm()">Initialize Swarm</button>
@@ -50,7 +55,10 @@
             </div>
 
             <div class="swarm-feed" id="swarmFeed">
-                <!-- Advanced Agents will stream here -->
+                <div class="welcome-card">
+                    <h2>Ready for Strategic Audit</h2>
+                    <p>Enter a brand name and a specific strategic question to initialize the multi-agent swarm.</p>
+                </div>
             </div>
         </main>
     </div>

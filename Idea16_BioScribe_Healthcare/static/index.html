@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bio-Scribe — Autonomous Healthcare Triage Swarm</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        :root{--bg:#f8fafc;--surface:#ffffff;--border:#e2e8f0;--text:#0f172a;--muted:#64748b;--primary:#2563eb;--urgent:#ef4444;--success:#10b981;--purple:#8b5cf6}
+        html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;overflow-x:hidden}
+        
+        .container{max-width:1200px;margin:0 auto;padding:40px 24px}
+
+        header{display:flex;align-items:center;gap:20px;margin-bottom:48px}
+        .logo{width:56px;height:56px;background:var(--primary);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 10px 25px -5px rgba(37,99,235,0.3)}
+        .header-text h1{font-size:1.8rem;font-weight:800;color:var(--text);letter-spacing:-0.5px}
+        .header-text p{font-size:0.95rem;color:var(--muted);margin-top:2px}
+        
+        .status-badge{margin-left:auto;display:flex;align-items:center;gap:10px;background:white;padding:10px 20px;border-radius:100px;border:1px solid var(--border);font-size:0.8rem;font-weight:700;color:var(--muted);box-shadow:0 4px 6px -1px rgba(0,0,0,0.05)}
+        .pulse{width:10px;height:10px;border-radius:50%;background:var(--success);animation:heartbeat 1.5s infinite ease-in-out}
+        @keyframes heartbeat{0%{transform:scale(0.8);opacity:1}50%{transform:scale(1.2);opacity:0.4}100%{transform:scale(0.8);opacity:1}}
+
+        .main-grid{display:grid;grid-template-columns:380px 1fr;gap:32px;align-items:start}
+        @media(max-width:1000px){.main-grid{grid-template-columns:1fr}}
+
+        .input-panel{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:32px;box-shadow:0 20px 25px -5px rgba(0,0,0,0.05)}
+        .input-panel h2{font-size:0.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:24px;display:flex;align-items:center;gap:10px}
+        .input-panel h2::after{content:'';height:1px;flex:1;background:var(--border)}
+
+        .field{margin-bottom:24px}
+        .field label{display:block;font-size:0.85rem;font-weight:600;margin-bottom:10px;color:var(--text)}
+        textarea{width:100%;height:350px;padding:24px;background:var(--bg);border:1px solid var(--border);border-radius:16px;font-family:inherit;font-size:1rem;resize:none;transition:all-2s;line-height:1.6}
+        textarea:focus{outline:none;border-color:var(--primary);background:white;box-shadow:0 0 0 4px rgba(37,99,235,0.1)}
+
+        .btn-launch{width:100%;padding:16px;background:var(--primary);color:white;border:none;border-radius:16px;font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:12px}
+        .btn-launch:hover{background:#1d4ed8;transform:translateY(-1px)}
+        .btn-launch:active{transform:translateY(0)}
+
+        /* Dashboard results */
+        #dashboard{display:none}
+        .dashboard-header{margin-bottom:32px;display:flex;align-items:center;justify-content:space-between}
+        .dashboard-title{font-size:1.2rem;font-weight:700}
+        
+        .agents-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
+        @media(max-width:600px){.agents-grid{grid-template-columns:1fr}}
+
+        .agent-card{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:28px;transition:all 0.3s;position:relative;overflow:hidden;animation:slideIn 0.5s ease both}
+        @keyframes slideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+        
+        .agent-header{display:flex;align-items:center;gap:16px;margin-bottom:20px}
+        .agent-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px}
+        .agent-info .role{font-size:0.7rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;opacity:0.8}
+        .agent-info .name{font-size:1rem;font-weight:700}
+
+        .agent-content{font-size:0.92rem;line-height:1.7;color:var(--muted);margin-bottom:24px}
+        .agent-footer{display:flex;align-items:center;justify-content:space-between;padding-top:18px;border-top:1px solid var(--bg)}
+        .verdict{font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:700;padding:6px 12px;border-radius:8px}
+
+        /* Loading state */
+        #loading{display:none;text-align:center;padding:100px 0}
+        .medical-scan{width:120px;height:120px;margin:0 auto 32px;position:relative}
+        .scan-ring{position:absolute;inset:0;border:2px solid var(--primary);border-radius:50%;animation:ring-expand 2s infinite}
+        .scan-ring:nth-child(2){animation-delay:0.5s}
+        .scan-ring:nth-child(3){animation-delay:1s}
+        @keyframes ring-expand{0%{transform:scale(0.5);opacity:1}100%{transform:scale(1.5);opacity:0}}
+        .scan-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:40px}
+        .loading-text{font-size:1.2rem;font-weight:700;color:var(--text);margin-bottom:8px}
+        .loading-sub{color:var(--muted);font-size:0.95rem}
+
+        /* Urgency badges */
+        .urgency-EMERGENCY{background:#fee2e2;color:#ef4444}
+        .urgency-URGENT{background:#ffedd5;color:#f97316}
+        .urgency-ROUTINE{background:#dcfce7;color:#10b981}
+
+        .sample-data{margin-top:24px;font-size:0.8rem;color:var(--muted)}
+        .sample-btn{background:none;border:none;color:var(--primary);font-weight:700;cursor:pointer;text-decoration:underline}
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <div class="logo">🏥</div>
+        <div class="header-text">
+            <h1>Bio-Scribe</h1>
+            <p>Autonomous Patient Triage & Clinical Trial Intelligence Swarm</p>
+        </div>
+        <div class="status-badge"><div class="pulse"></div> CLINICAL NETWORK ACTIVE</div>
+    </header>
+
+    <div class="main-grid">
+        <aside class="input-panel" id="input-panel">
+            <h2>🩺 Patient Intake</h2>
+            <div class="field">
+                <label>Symptom Log & Medical History</label>
+                <textarea id="patient_data" placeholder="Describe the symptoms, patient age, and relevant medical history..."></textarea>
+                <p class="sample-data">Try: <button class="sample-btn" onclick="setSample()">72yo Male, chest pain, history of HTN</button></p>
+            </div>
+            <button class="btn-launch" onclick="launchSwarm()">✨ Deploy Medical Swarm</button>
+        </aside>
+
+        <section id="loading">
+            <div class="medical-scan">
+                <div class="scan-ring"></div>
+                <div class="scan-ring"></div>
+                <div class="scan-ring"></div>
+                <div class="scan-icon">🧬</div>
+            </div>
+            <div class="loading-text">Analyzing Clinical Data...</div>
+            <div class="loading-sub" id="loading-sub">Deploying agents in parallel...</div>
+        </section>
+
+        <section id="dashboard">
+            <div class="dashboard-header">
+                <h2 class="dashboard-title">Clinical Analysis Dashboard</h2>
+                <button class="sample-btn" onclick="reset()">New Patient</button>
+            </div>
+            <div class="agents-grid" id="agents-grid"></div>
+        </section>
+    </div>
+</div>
+
+<script>
+    const msgs = [
+        "Analyzing symptom patterns...",
+        "Cross-referencing medical protocols...",
+        "Scanning clinical trial databases...",
+        "Generating doctor's briefing...",
+        "Bio-Scribe swarm fully active..."
+    ];
+
+    function setSample() {
+        document.getElementById('patient_data').value = "Patient: 72-year-old Male\nSymptoms: Acute chest pain radiating to left arm, shortness of breath for 30 minutes, cold sweat.\nHistory: Hypertension (15 years), Type 2 Diabetes, Smoker.";
+    }
+
+    async function launchSwarm() {
+        const patientData = document.getElementById('patient_data').value.trim();
+        if(!patientData) return alert("Please enter patient data.");
+
+        document.getElementById('input-panel').style.opacity = "0.5";
+        document.getElementById('input-panel').style.pointerEvents = "none";
+        document.getElementById('loading').style.display = "block";
+        document.getElementById('dashboard').style.display = "none";
+
+        let msgIdx = 0;
+        const msgInterval = setInterval(() => {
+            document.getElementById('loading-sub').textContent = msgs[msgIdx % msgs.length];
+            msgIdx++;
+        }, 1500);
+
+        try {
+            const response = await fetch('/triage', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ patient_data: patientData })
+            });
+            const data = await response.json();
+            renderAgents(data.agents);
+        } catch (error) {
+            alert("Swarm error: " + error);
+        } finally {
+            clearInterval(msgInterval);
+        }
+    }
+
+    function renderAgents(agents) {
+        document.getElementById('loading').style.display = "none";
+        document.getElementById('dashboard').style.display = "block";
+        const grid = document.getElementById('agents-grid');
+        grid.innerHTML = '';
+
+        agents.forEach((agent, i) => {
+            const card = document.createElement('div');
+            card.className = 'agent-card';
+            card.style.animationDelay = `${i * 0.1}s`;
+            
+            const verdictClass = agent.verdict.includes('EMERGENCY') ? 'urgency-EMERGENCY' : 
+                                agent.verdict.includes('URGENT') ? 'urgency-URGENT' : 
+                                agent.verdict.includes('ROUTINE') ? 'urgency-ROUTINE' : '';
+
+            card.innerHTML = `
+                <div class="agent-header">
+                    <div class="agent-icon" style="background:${agent.color}15; color:${agent.color}">${agent.icon}</div>
+                    <div class="agent-info">
+                        <div class="role" style="color:${agent.color}">${agent.role}</div>
+                        <div class="name">${agent.name}</div>
+                    </div>
+                </div>
+                <div class="agent-content">${fmt(agent.analysis)}</div>
+                <div class="agent-footer">
+                    <div class="verdict ${verdictClass}">${agent.verdict}</div>
+                    <div style="font-size:0.65rem; color:var(--muted)">BIO-SCRIBE v1.1</div>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    function fmt(text) {
+        if (!text) return "";
+        // Replace "1. ", "2. ", "3. " with bullets
+        let formatted = text.replace(/^\d+\.\s/gm, '• ');
+        // Replace newlines with <br>
+        formatted = formatted.split('\n').map(line => {
+            line = line.trim();
+            if (line.startsWith('•') || line.startsWith('-')) {
+                return `<div style="margin-left:12px; margin-bottom:4px; display:flex; gap:8px"><span>▸</span><span>${line.substring(1).trim()}</span></div>`;
+            }
+            if (line.includes(':')) {
+                const parts = line.split(':');
+                return `<strong style="color:var(--text)">${parts[0]}:</strong>${parts.slice(1).join(':')}`;
+            }
+            return line;
+        }).join('<div style="height:6px"></div>');
+        
+        return formatted;
+    }
+
+    function reset() {
+        location.reload();
+    }
+</script>
+</body>
+</html>
